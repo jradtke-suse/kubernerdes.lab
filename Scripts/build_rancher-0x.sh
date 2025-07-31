@@ -10,8 +10,12 @@
 
 # add ssh-key for mansible
 
+# SU to root
+su -
+
 # enable sudo nopasswd for mansible
-SUDO_USER=$(whoami)
+zypper in sudo 
+SUDO_USER=mansible
 echo "$SUDO_USER ALL=(ALL) NOPASSWD: ALL" | sudo tee  /etc/sudoers.d/$SUDO_USER-nopasswd-all
 
 # disable IPv6 (doesn't work in my setup)
@@ -21,6 +25,9 @@ net.ipv6.conf.default.disable_ipv6 = 1
 net.ipv6.conf.lo.disable_ipv6 = 1
 EOF
 
+# Disable firewalld (revisit this)
+systemctl disable firewalld --now
+
 # Remove existing entry
 sudo sed -i -e '/rancher/d' /etc/hosts
 # Add all the Rancher Nodes to /etc/hosts
@@ -29,11 +36,12 @@ cat << EOF | tee -a /etc/hosts
 # Rancher Nodes
 10.10.12.121    rancher-01.kubernerdes.lab rancher-01
 10.10.12.122    rancher-02.kubernerdes.lab rancher-02
+10.10.12.123    rancher-03.kubernerdes.lab rancher-03
 EOF
 
 # Set some variables
-export MY_K3S_VERSION=v1.31.2+k3s1
-export MY_K3S_INSTALL_CHANNEL=v1.31
+export MY_K3S_VERSION=v1.32.6+k3s1
+export MY_K3S_INSTALL_CHANNEL=v1.32
 export MY_K3S_TOKEN=KentuckyHarvester
 export MY_K3S_ENDPOINT=10.10.12.120
 export MY_K3S_HOSTNAME=rancher.kubernerdes.lab
