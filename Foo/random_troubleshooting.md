@@ -19,3 +19,7 @@ kubectl -n fleet-default get clusters.provisioning.cattle.io
 kubectl -n fleet-default delete cluster.provisioning.cattle.io <cluster-name>
 ```
 
+## Networking 
+```
+echo "podCIDR: $(kubectl get nodes -o jsonpath='{.items[*].spec.podCIDR}') "
+echo "Cluster-IP Range: $(kubectl cluster-info dump | grep -m 1 service-cluster-ip-range)"
