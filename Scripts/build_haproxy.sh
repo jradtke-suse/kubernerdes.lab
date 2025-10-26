@@ -30,5 +30,6 @@ EOF
 sudo systemctl enable keepalived --now
 cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.$(uuidgen | tr -d '-' | head -c 6)
 curl -o /etc/haproxy/haproxy.cfg https://raw.githubusercontent.com/jradtke-suse/rancher.kubernerdes.lab/refs/heads/main/Files/etc_haproxy_haproxy.cfg
+curl -o /etc/sysctl.d/10-haproxy.cfg https://raw.githubusercontent.com/jradtke-suse/rancher.kubernerdes.lab/refs/heads/main/Files/etc_sysctl.d_10-haproxy.conf
 sudo systemctl enable haproxy --now
 
