@@ -13,6 +13,20 @@
 # SU to root
 su -
 
+#SUSEConnect --product sle-module-basesystem/15.7/x86_64
+#SUSEConnect --product sle-module-server-applications/15.7/x86_64
+#suseconnect -p PackageHub/15.7/x86_64
+
+zypper refresh
+
+# Install git-core
+zypper -n in git-core
+
+# Install Helm
+curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+chmod 700 get_helm.sh
+./get_helm.sh
+
 # enable sudo nopasswd for mansible
 zypper in sudo 
 SUDO_USER=mansible
@@ -92,10 +106,8 @@ helm install rancher rancher-latest/rancher \
   --set replicas=1 \
   --set bootstrapPassword=Passw0rd01
 
-
 echo https://rancher.kubernerdes.lab/dashboard/?setup=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}')
-BOOTSTRAP_PASSWORD=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}{{ "\n" }}')j
-
+BOOTSTRAP_PASSWORD=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}{{ "\n" }}')
 
 ## Troubleshooting
 kubectl -n cattle-system get pods -l app=rancher -o wide
