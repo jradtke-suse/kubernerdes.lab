@@ -104,7 +104,7 @@ helm install rancher rancher-latest/rancher \
   --namespace cattle-system \
   --set hostname=rancher.kubernerdes.lab \
   --set replicas=1 \
-  --set bootstrapPassword=Passw0rd01
+  --set bootstrapPassword=mypasswordis3l33t
 
 echo https://rancher.kubernerdes.lab/dashboard/?setup=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}')
 BOOTSTRAP_PASSWORD=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}{{ "\n" }}')
