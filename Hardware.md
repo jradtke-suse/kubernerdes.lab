@@ -13,7 +13,7 @@
 | virgil         | Harvester         | Asus Z490    | 20  | i9-10850K       | 128 | 256   | 1024  | 
 | morgan         | Harvester         | Asus Z490    | 20  | i9-10850K       | 128 | 256   | 1024  | 
 |----------------|-------------------|--------------|-----|-----------------|-----|-------|-------|
-| jarvis	 | SLES with SUSE AI | Asus Z490    | 24  | Intel Core Ultra 9 285K | 64 | 2048 | ? | 
+| jarvis	 | SLES with SUSE AI | HP Omen 45L GT22-3090 | 24  | Intel Core Ultra 9 285K | 64 | 2048 | ? | 
 |----------------|-------------------|--------------|-----|-----------------|-----|-------|-------|
 | cisco-sg300-28 | Mng Switch        | SG300-28     | X | X | X | X | X | X | 
 | firewall       | Border Firewall   | Sophos XG85  | ? | ? | ? | ? | ? |
