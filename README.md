@@ -33,4 +33,4 @@ These will all have their own Repos (eventually)
 * multi-linux-manager.kubernerdes.lab
 
 ## References
-[Hardware Overview](./Hardware.md
+[Hardware Overview](./Hardware.md)
