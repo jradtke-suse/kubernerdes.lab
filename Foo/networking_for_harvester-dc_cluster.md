@@ -1,4 +1,5 @@
-Had to use active-backup for LAG :-(
+I can use 802.3ad (LACP) - remember to check the LACP enabled box when creating the LAG
+
 # ***************************
 NIC closest to CPU
 GE7  asus-pc01-pci1-0 - port away from mobo
