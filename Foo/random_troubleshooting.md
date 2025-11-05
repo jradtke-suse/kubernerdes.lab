@@ -23,3 +23,9 @@ kubectl -n fleet-default delete cluster.provisioning.cattle.io <cluster-name>
 ```
 echo "podCIDR: $(kubectl get nodes -o jsonpath='{.items[*].spec.podCIDR}') "
 echo "Cluster-IP Range: $(kubectl cluster-info dump | grep -m 1 service-cluster-ip-range)"
+
+### Networking: PXE
+```
+tcpdump -i <interface> -n -vv \ '(port 67 or port 68 or port 69 or port 80) and (host 10.10.12.101 or host 10.10.12.102 or host 10.10.12.111)' \ -w /tmp/pxe-boot.pcap
+tail -f /var/log/apache2/access_log
+```
