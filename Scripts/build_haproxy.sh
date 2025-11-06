@@ -4,6 +4,11 @@ SUSEConnect --product sle-module-basesystem/15.7/x86_64
 SUSEConnect --product sle-module-server-applications/15.7/x86_64
 SUSEConnect --product sle-ha/15.7/x86_64 -r (add reg code for HA Extension)
 
+cat << EOF >> /etc/sysconfig/network/ifcfg-eth0
+IPADDR='10.10.12.202/22'
+GATEWAY='10.10.12.1'
+EOF
+sed -i -e 's/dhcp4/static/g' /etc/sysconfig/network/ifcfg-eth0
 
 # using Keepalived for floating/VIP (and to future proof)
 zypper -n in haproxy keepalived
