@@ -8,7 +8,7 @@
 # Add mansible user
 # open SSH port
 
-# add ssh-key for mansible
+# ssh-key for rancher should exist (if you deployed VM on Harvester)
 
 # SU to root
 su -
@@ -48,16 +48,16 @@ sudo sed -i -e '/rancher/d' /etc/hosts
 cat << EOF | tee -a /etc/hosts
 
 # Rancher Nodes
-10.10.12.121    rancher-01.kubernerdes.lab rancher-01
-10.10.12.122    rancher-02.kubernerdes.lab rancher-02
-10.10.12.123    rancher-03.kubernerdes.lab rancher-03
+10.10.12.211    rancher-01.kubernerdes.lab rancher-01
+10.10.12.212    rancher-02.kubernerdes.lab rancher-02
+10.10.12.213    rancher-03.kubernerdes.lab rancher-03
 EOF
 
 # Set some variables
 export MY_K3S_VERSION=v1.32.6+k3s1
 export MY_K3S_INSTALL_CHANNEL=v1.32
-export MY_K3S_TOKEN=KentuckyHarvester
-export MY_K3S_ENDPOINT=10.10.12.120
+export MY_K3S_TOKEN=Waggoner
+export MY_K3S_ENDPOINT=10.10.12.210
 export MY_K3S_HOSTNAME=rancher.kubernerdes.lab
 
 # Run the install process
