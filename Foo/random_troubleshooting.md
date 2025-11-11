@@ -29,3 +29,49 @@ echo "Cluster-IP Range: $(kubectl cluster-info dump | grep -m 1 service-cluster-
 tcpdump -i <interface> -n -vv \ '(port 67 or port 68 or port 69 or port 80) and (host 10.10.12.101 or host 10.10.12.102 or host 10.10.12.111)' \ -w /tmp/pxe-boot.pcap
 tail -f /var/log/apache2/access_log
 ```
+
+## Cert review
+
+```
+HOST=observability.kubernerdes.lab
+openssl s_client \
+  -servername "$HOST" \
+  -showcerts \
+  -connect "$HOST:$PORT" \
+  < /dev/null 2>/dev/null
+```
+
+```
+HOST=observability.kubernerdes.lab
+PORT='443'; \
+openssl s_client \
+  -servername "$HOST" \
+  -showcerts \
+  -connect "$HOST:$PORT" \
+  < /dev/null 2>/dev/null \
+  | awk '/BEGIN/,/END/{ if(/BEGIN/){a++}; print}' \
+  | {
+    cert_text=""
+    while IFS= read -r line; do
+      case "$line" in
+        *"END CERTIFICATE"*)
+          cert_text="$cert_text$line
+"
+          printf '%s' "$cert_text" \
+            | openssl x509 \
+              -fingerprint \
+              -sha1 \
+              -noout
+          cert_text=""
+          ;;
+        *)
+          cert_text="$cert_text$line
+"
+          ;;
+      esac
+    done
+  } \
+  | awk -F'=' '{print $2}' \
+  | sed 's/://g' \
+  | tr '[:upper:]' '[:lower:]'
+```
