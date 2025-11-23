@@ -13,6 +13,7 @@
 # SU to root
 su -
 
+#SUSEConnect -e <reg_email> -r <reg_code>
 #SUSEConnect --product sle-module-basesystem/15.7/x86_64
 #SUSEConnect --product sle-module-server-applications/15.7/x86_64
 #suseconnect -p PackageHub/15.7/x86_64
@@ -67,6 +68,7 @@ case $(uname -n) in
     curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL=${MY_K3S_INSTALL_CHANNEL} sh -s - server --cluster-init --token ${MY_K3S_TOKEN} --tls-san ${MY_K3S_ENDPOINT},${MY_K3S_HOSTNAME}
   ;;
   *)
+    sleep 120 # allow time for the first node to complete install
     echo "curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL=${MY_K3S_INSTALL_CHANNEL} sh -s - --server https://${MY_K3S_ENDPOINT}:6443 --token ${MY_K3S_TOKEN}"
     curl -sfL https://get.k3s.io | INSTALL_K3S_CHANNEL=${MY_K3S_INSTALL_CHANNEL} sh -s - --server https://${MY_K3S_ENDPOINT}:6443 --token ${MY_K3S_TOKEN}
   ;;
