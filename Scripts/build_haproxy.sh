@@ -9,6 +9,14 @@ IPADDR='10.10.12.202/22'
 GATEWAY='10.10.12.1'
 EOF
 sed -i -e 's/dhcp4/static/g' /etc/sysconfig/network/ifcfg-eth0
+echo "default 10.10.12.1 - eth0" > /etc/sysconfig/network/ifroute-eth0
+
+cp /etc/sysconfig/network/config /etc/sysconfig/network/config.orig
+sed -i -e 's/NETCONFIG_DNS_STATIC_SEARCHLIST=""/NETCONFIG_DNS_STATIC_SEARCHLIST="kubernerdes.lab"/g' /etc/sysconfig/network/config
+sed -i -e 's/NETCONFIG_DNS_STATIC_SERVERS=""/NETCONFIG_DNS_STATIC_SERVERS="10.10.12.8 10.10.12.9 8.8.8.8"/g' /etc/sysconfig/network/config
+sed -i -e 's/NETCONFIG_NTP_STATIC_SERVERS=""/NETCONFIG_NTP_STATIC_SERVERS="0.pool.suse.ntp.org 1.pool.suse.ntp.org 2.pool.suse.ntp.org"/g' /etc/sysconfig/network/config
+sdiff /etc/sysconfig/network/config.orig /etc/sysconfig/network/config
+
 
 # using Keepalived for floating/VIP (and to future proof)
 zypper -n in haproxy keepalived
