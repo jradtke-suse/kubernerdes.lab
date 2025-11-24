@@ -5,13 +5,6 @@
 # SUDO SU to root  (This assumes all nodes will be SLES
 sudo su -
 
-#SUSEConnect -e <reg_email> -r <reg_code>
-#SUSEConnect --product sle-module-basesystem/15.7/x86_64
-#SUSEConnect --product sle-module-server-applications/15.7/x86_64
-#suseconnect -p PackageHub/15.7/x86_64
-
-zypper refresh
-
 # Task: configure static IP address
 case $(uname -n) in
   harvester-dc-lb) IPADDR='10.10.12.92/22';;
@@ -19,11 +12,6 @@ case $(uname -n) in
   rancher-01) IPADDR='10.10.12.211/22';;
   rancher-02) IPADDR='10.10.12.212/22';;
   rancher-03) IPADDR='10.10.12.213/22';;
-esac
-
-# Add HA Extension to the Load Balancer nodes
-case $(uname -n) in
-  harvester-*-lb) SUSEConnect --product sle-ha/15.7/x86_64 -r (add reg code for HA Extension);;
 esac
 
 cat << EOF >> /etc/sysconfig/network/ifcfg-eth0
@@ -39,6 +27,14 @@ sed -i -e 's/NETCONFIG_DNS_STATIC_SEARCHLIST=""/NETCONFIG_DNS_STATIC_SEARCHLIST=
 sed -i -e 's/NETCONFIG_DNS_STATIC_SERVERS=""/NETCONFIG_DNS_STATIC_SERVERS="10.10.12.8 10.10.12.9 8.8.8.8"/g' /etc/sysconfig/network/config
 sed -i -e 's/NETCONFIG_NTP_STATIC_SERVERS=""/NETCONFIG_NTP_STATIC_SERVERS="0.pool.suse.ntp.org 1.pool.suse.ntp.org 2.pool.suse.ntp.org"/g' /etc/sysconfig/network/config
 sdiff /etc/sysconfig/network/config.orig /etc/sysconfig/network/config | egrep '\|'
+
+shutdown now -r
+
+#SUSEConnect -e <reg_email> -r <reg_code>
+#SUSEConnect --product sle-module-basesystem/15.7/x86_64
+#SUSEConnect --product sle-module-server-applications/15.7/x86_64
+#suseconnect -p PackageHub/15.7/x86_64
+zypper refresh
 
 # Install git-core
 zypper -n in git-core
