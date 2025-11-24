@@ -13,6 +13,7 @@ case $(uname -n) in
   rancher-02) IPADDR='10.10.12.212/22';;
   rancher-03) IPADDR='10.10.12.213/22';;
 esac
+echo "Note: using $IPADDR"
 
 cat << EOF >> /etc/sysconfig/network/ifcfg-eth0
 IPADDR=$IPADDR
@@ -28,12 +29,22 @@ sed -i -e 's/NETCONFIG_DNS_STATIC_SERVERS=""/NETCONFIG_DNS_STATIC_SERVERS="10.10
 sed -i -e 's/NETCONFIG_NTP_STATIC_SERVERS=""/NETCONFIG_NTP_STATIC_SERVERS="0.pool.suse.ntp.org 1.pool.suse.ntp.org 2.pool.suse.ntp.org"/g' /etc/sysconfig/network/config
 sdiff /etc/sysconfig/network/config.orig /etc/sysconfig/network/config | egrep '\|'
 
+# disable IPv6 (doesn't work in my setup)
+cat << EOF | tee /etc/sysctl.d/10-disable_ipv6.conf
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+net.ipv6.conf.lo.disable_ipv6 = 1
+EOF
+
+# Disable firewalld (revisit this)
+systemctl disable firewalld --now
+
 shutdown now -r
 
-#SUSEConnect -e <reg_email> -r <reg_code>
-#SUSEConnect --product sle-module-basesystem/15.7/x86_64
-#SUSEConnect --product sle-module-server-applications/15.7/x86_64
-#suseconnect -p PackageHub/15.7/x86_64
+# SUSEConnect -e <reg_email> -r <reg_code>
+# SUSEConnect --product sle-module-basesystem/15.7/x86_64
+# SUSEConnect --product sle-module-server-applications/15.7/x86_64
+# suseconnect -p PackageHub/15.7/x86_64
 zypper refresh
 
 # Install git-core
@@ -44,12 +55,3 @@ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scrip
 chmod 700 get_helm.sh
 ./get_helm.sh
 
-# disable IPv6 (doesn't work in my setup)
-cat << EOF | tee /etc/sysctl.d/10-disable_ipv6.conf
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
-EOF
-
-# Disable firewalld (revisit this)
-systemctl disable firewalld --now
