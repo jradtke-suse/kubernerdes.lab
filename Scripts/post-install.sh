@@ -7,17 +7,21 @@ sudo su -
 
 # Task: configure static IP address
 case $(uname -n) in
-  harvester-dc-lb) IPADDR='10.10.12.92/22';;
-  harvester-edge-lb) IPADDR='10.10.12.92/22';;
-  rancher-01) IPADDR='10.10.12.211/22';;
-  rancher-02) IPADDR='10.10.12.212/22';;
-  rancher-03) IPADDR='10.10.12.213/22';;
+  harvester-dc-lb) IPADDR='10.10.12.92/22' ;;
+  harvester-edge-lb) IPADDR='10.10.12.92/22' ;;
+  rancher-01) IPADDR='10.10.12.211/22' ;;
+  rancher-02) IPADDR='10.10.12.212/22' ;;
+  rancher-03) IPADDR='10.10.12.213/22' ;;
+  observability-01) IPADDR='10.10.12.221/22' ;;
+  observability-02) IPADDR='10.10.12.222/22' ;;
+  observability-03) IPADDR='10.10.12.223/22' ;;
 esac
 echo "Note: using $IPADDR"
 
+cp /etc/sysconfig/network/ifcfg-eth0 /etc/sysconfig/network/ifcfg-eth0.orig
 cat << EOF >> /etc/sysconfig/network/ifcfg-eth0
 IPADDR=$IPADDR
-GATEWAY='10.10.12.1'
+GATEWAY=10.10.12.1
 EOF
 sed -i -e 's/dhcp4/static/g' /etc/sysconfig/network/ifcfg-eth0
 echo "default 10.10.12.1 - eth0" > /etc/sysconfig/network/ifroute-eth0
