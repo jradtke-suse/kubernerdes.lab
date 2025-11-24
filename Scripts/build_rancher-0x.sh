@@ -11,39 +11,9 @@
 # ssh-key for rancher should exist (if you deployed VM on Harvester)
 
 # SU to root
-su -
+sudo su -
 
-#SUSEConnect -e <reg_email> -r <reg_code>
-#SUSEConnect --product sle-module-basesystem/15.7/x86_64
-#SUSEConnect --product sle-module-server-applications/15.7/x86_64
-#suseconnect -p PackageHub/15.7/x86_64
-
-zypper refresh
-
-# Install git-core
-zypper -n in git-core
-
-# Install Helm
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-chmod 700 get_helm.sh
-./get_helm.sh
-
-# enable sudo nopasswd for mansible
-zypper in sudo 
-SUDO_USER=mansible
-echo "$SUDO_USER ALL=(ALL) NOPASSWD: ALL" | sudo tee  /etc/sudoers.d/$SUDO_USER-nopasswd-all
-
-# disable IPv6 (doesn't work in my setup)
-cat << EOF | tee /etc/sysctl.d/10-disable_ipv6.conf
-net.ipv6.conf.all.disable_ipv6 = 1
-net.ipv6.conf.default.disable_ipv6 = 1
-net.ipv6.conf.lo.disable_ipv6 = 1
-EOF
-
-# Disable firewalld (revisit this)
-systemctl disable firewalld --now
-
-# Remove existing entry
+# Remove any existing host entry
 sudo sed -i -e '/rancher/d' /etc/hosts
 # Add all the Rancher Nodes to /etc/hosts
 cat << EOF | tee -a /etc/hosts
@@ -75,8 +45,8 @@ case $(uname -n) in
 esac
 
 # Make a copy of the KUBECONFIG for non-root use
-mkdir ~/.kube
-sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config; sudo chown $(whoami) ~/.kube/config
+# TODO:  I need to 1/ decide if this script should run as root (probably: yes), figure out what user to store the kubeconfig with (probably: sles)
+mkdir ~/.kube; sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config; sudo chown $(whoami) ~/.kube/config
 export KUBECONFIG=~/.kube/config
 openssl s_client -connect 127.0.0.1:6443 -showcerts </dev/null | openssl x509 -noout -text > cert.0
 grep DNS cert.0
@@ -111,11 +81,12 @@ helm install rancher rancher-latest/rancher \
 echo https://rancher.kubernerdes.lab/dashboard/?setup=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}')
 BOOTSTRAP_PASSWORD=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}{{ "\n" }}')
 
+exit 
 ## Troubleshooting
 kubectl -n cattle-system get pods -l app=rancher -o wide
 kubectl -n cattle-system logs -l app=cattle-agent
 kubectl -n cattle-system logs -l app=cattle-cluster-agentA
-kubectl get deployment
+kubectl -n cattle-system get deployment
 kubectl -n cattle-system rollout status deploy/rancher
 kubectl -n cattle-system rollout status deploy/rancher-webhook
 
