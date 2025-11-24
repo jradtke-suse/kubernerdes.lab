@@ -1,29 +1,13 @@
 #!/bin/bash
 
-SUSEConnect -e <reg_email> -r <reg_code>
-SUSEConnect --product sle-module-basesystem/15.7/x86_64
-SUSEConnect --product sle-module-server-applications/15.7/x86_64
+sudo su -
+
+# This script assumes you have already registered your node (using post_install.sh)
+# SUSEConnect -e <reg_email> -r <reg_code>
+# SUSEConnect --product sle-module-basesystem/15.7/x86_64
+# SUSEConnect --product sle-module-server-applications/15.7/x86_64
+# TODO - add a check to see whether HA is enabled and if not, enable it
 SUSEConnect --product sle-ha/15.7/x86_64 -r (add reg code for HA Extension)
-
-# Task: configure static IP address
-case $(uname -n) in 
-  harvester-dc-lb) IPADDR='10.10.12.92/22';;
-  harvester-dc-edge) IPADDR='10.10.12.92/22';;
-esac
-
-cat << EOF >> /etc/sysconfig/network/ifcfg-eth0
-IPADDR=$IPADDR
-GATEWAY='10.10.12.1'
-EOF
-sed -i -e 's/dhcp4/static/g' /etc/sysconfig/network/ifcfg-eth0
-echo "default 10.10.12.1 - eth0" > /etc/sysconfig/network/ifroute-eth0
-
-# Task: configure DNS and NTP settings
-cp /etc/sysconfig/network/config /etc/sysconfig/network/config.orig
-sed -i -e 's/NETCONFIG_DNS_STATIC_SEARCHLIST=""/NETCONFIG_DNS_STATIC_SEARCHLIST="kubernerdes.lab"/g' /etc/sysconfig/network/config
-sed -i -e 's/NETCONFIG_DNS_STATIC_SERVERS=""/NETCONFIG_DNS_STATIC_SERVERS="10.10.12.8 10.10.12.9 8.8.8.8"/g' /etc/sysconfig/network/config
-sed -i -e 's/NETCONFIG_NTP_STATIC_SERVERS=""/NETCONFIG_NTP_STATIC_SERVERS="0.pool.suse.ntp.org 1.pool.suse.ntp.org 2.pool.suse.ntp.org"/g' /etc/sysconfig/network/config
-sdiff /etc/sysconfig/network/config.orig /etc/sysconfig/network/config | egrep '\|'
 
 # using Keepalived for floating/VIP (and to future proof)
 zypper -n in haproxy keepalived
