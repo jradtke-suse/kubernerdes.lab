@@ -1,11 +1,7 @@
 #cloud-config
 
-# Enable system package updates during cloud-init (this section will not work because the host has no repos available as it is not reg'd yet)
-package_update: true
-
-# List of packages to install on first boot (this section will not work because the host has no repos available as it is not reg'd yet)
-#packages:
-#  - qemu-guest-agent
+# Enable system package updates during cloud-init (this section will not work because the host has no repos available as it is not reg'd yet) - removing for now
+# package_update: true
 
 # Create user accounts with their configuration
 users:
