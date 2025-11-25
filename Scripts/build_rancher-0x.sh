@@ -47,6 +47,7 @@ esac
 # Make a copy of the KUBECONFIG for non-root use
 # TODO:  I need to 1/ decide if this script should run as root (probably: yes), figure out what user to store the kubeconfig with (probably: sles)
 mkdir ~/.kube; sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config; sudo chown $(whoami) ~/.kube/config
+mkdir ~sles/.kube; sudo cp /etc/rancher/k3s/k3s.yaml ~sles/.kube/config; sudo chown -R sles ~sles/.kube/config
 export KUBECONFIG=~/.kube/config
 openssl s_client -connect 127.0.0.1:6443 -showcerts </dev/null | openssl x509 -noout -text > cert.0
 grep DNS cert.0
