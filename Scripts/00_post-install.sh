@@ -2,6 +2,10 @@
 
 # For my nodes that are built using DHCP, I need to statically configure the network
 
+
+## THIS SHOULD BE PART OF THE INSTALLATION USING "userdata" NOW
+exit 0
+
 # SUDO SU to root  (This assumes all nodes will be SLES
 sudo su -
 
@@ -47,18 +51,4 @@ EOF
 systemctl disable firewalld --now
 
 shutdown now -r
-
-# SUSEConnect -e <reg_email> -r <reg_code>
-# SUSEConnect --product sle-module-basesystem/15.7/x86_64
-# SUSEConnect --product sle-module-server-applications/15.7/x86_64
-# suseconnect -p PackageHub/15.7/x86_64
-zypper refresh
-
-# Install git-core
-zypper -n in git-core
-
-# Install Helm
-curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-chmod 700 get_helm.sh
-./get_helm.sh
 
