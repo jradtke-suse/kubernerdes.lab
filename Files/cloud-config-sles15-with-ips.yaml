@@ -44,6 +44,7 @@ runcmd:
 
     # Determine IP address based on hostname
     case "$HOSTNAME" in
+      librenms)  IPADDR="10.10.12.12/22" ;;
       harvester-edge-lb) IPADDR="10.10.12.91/22" ;;
       harvester-dc-lb) IPADDR="10.10.12.92/22" ;;
       rancher-01) IPADDR="10.10.12.211/22" ;;
