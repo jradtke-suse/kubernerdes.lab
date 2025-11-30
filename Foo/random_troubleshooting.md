@@ -34,6 +34,7 @@ tail -f /var/log/apache2/access_log
 
 ```
 HOST=observability.kubernerdes.lab
+PORT=6443
 openssl s_client \
   -servername "$HOST" \
   -showcerts \
