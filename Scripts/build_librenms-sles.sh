@@ -10,6 +10,9 @@ echo "=================================="
 echo "LibreNMS Installation for SLES 15"
 echo "=================================="
 
+# Check whether the host is registered (and therefore capable of updates)
+# TODO: figure out command here
+
 # Update system
 echo "Step 1: Updating system..."
 zypper refresh
@@ -110,6 +113,11 @@ echo "Please set a root password and answer the security questions."
 mysql_secure_installation
 
 # Create LibreNMS database and user
+MYSQL_ROOT_PASSWORD=
+LIBRENMS_DB=librenms
+LIBRENMS_USER=librenms
+LIBRENMS_PASSWORD=
+
 echo "Step 10: Creating LibreNMS database..."
 read -sp "Enter MariaDB root password: " MYSQL_ROOT_PASSWORD
 echo
@@ -173,7 +181,7 @@ echo "Step 16: Configuring Apache..."
 cat > /etc/apache2/vhosts.d/librenms.conf << 'EOF'
 <VirtualHost *:80>
   DocumentRoot /opt/librenms/html/
-  ServerName  librenms.example.com
+  ServerName  librenms.kubernerdes.lab
 
   <Directory "/opt/librenms/html/">
     Require all granted
@@ -232,6 +240,7 @@ if [ ! -f /opt/librenms/.env ]; then
     cp /opt/librenms/.env.example /opt/librenms/.env
     chown librenms:librenms /opt/librenms/.env
 fi
+vi /opt/librenms/.env
 
 # Set database credentials in .env file
 su - librenms -c "cd /opt/librenms && php artisan key:generate"
@@ -242,40 +251,34 @@ cp /etc/snmp/snmpd.conf /etc/snmp/snmpd.conf.bak
 cat > /etc/snmp/snmpd.conf << 'EOF'
 
 ## Added for matrix.lab SNMP monitoring
-syslocation Pisgah Forest, USA 
+syslocation [35.209450, -82.698050]
 syscontact Root <cloudxabide@gmail.com>
 dontLogTCPWrappersConnects yes
 
 com2sec    local        localhost          publicRO
-com2sec    matrixlab    10.10.10.0/24      publicRO
+com2sec    kubernerdeslab    10.10.12.0/22      publicRO
 
 ##         group.name   	sec.model  	sec.name
 group      localROGroup    	v2c	 	local
-group      MatrixLabROGroup    	v2c		matrixlab
+group      KubernerdesLabROGroup    	v2c		kubernerdeslab
 
 ##         incl/excl   subtree     mask
 view all   included    .1          80
 
 ##       group          	context sec.model sec.level   prefix   read     write  notif
-access   MatrixLabROGroup      	""      v2c       noauth      exact    all	none   none
+access   KubernerdesLabROGroup      	""      v2c       noauth      exact    all	none   none
 access   localROGroup      	""      v2c       noauth      exact    all	none   none
 EOF
 
 systemctl enable snmpd
 systemctl restart snmpd
 
+# Install cron
+zypper in cron
+
 # Set up LibreNMS scheduled task (cron)
 echo "Step 22: Setting up LibreNMS scheduler..."
-cat > /etc/cron.d/librenms << 'EOF'
-33  */6   * * *   librenms    /opt/librenms/validate.php >/dev/null 2>&1
-*/5 *     * * *   librenms    /opt/librenms/discovery.php -h new >> /dev/null 2>&1
-*/5 *     * * *   librenms    /opt/librenms/cronic /opt/librenms/poller-wrapper.py >> /dev/null 2>&1
-15  0     * * *   librenms    /opt/librenms/daily.sh >> /dev/null 2>&1
-*   *     * * *   librenms    /opt/librenms/alerts.php >> /dev/null 2>&1
-*   *     * * *   librenms    /opt/librenms/poll-billing.php >> /dev/null 2>&1
-01  *     * * *   librenms    /opt/librenms/billing-calculate.php >> /dev/null 2>&1
-*/5 *     * * *   librenms    /opt/librenms/check-services.php >> /dev/null 2>&1
-EOF
+cp /opt/librenms/dist/librenms.cron /etc/cron.d/librenms
 
 # Set up logrotate
 echo "Step 23: Setting up log rotation..."
@@ -300,6 +303,20 @@ if systemctl is-active --quiet firewalld; then
 else
     echo "Firewalld is not running, skipping firewall configuration"
 fi
+
+# Setup RRDcached (WIP)
+# There is no (reasonable) path to installing rrdcached on SLES (that I can find)
+#  I have zero interest in building my own binaries (and owning that upkeep)
+sudo zypper install rrdtool
+cp /opt/librenms/dist/rrdcached/rrdcached.service /etc/systemd/system/rrdcached.service
+
+sudo mkdir -p /var/lib/rrdcached/db
+sudo mkdir -p /var/lib/rrdcached/journal
+chown librenms:librenms /var/lib/rrdcached/journal/
+
+sudo systemctl daemon-reload
+sudo systemctl enable rrdcached
+sudo systemctl start rrdcached
 
 # Get server IP
 SERVER_IP=$(hostname -I | awk '{print $1}')
