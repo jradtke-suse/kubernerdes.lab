@@ -22,15 +22,14 @@
 ## Unused
 | System         | Purpose           | Model            | CPU | CPU model       | Mem | Disk0 | Disk1 |
 |:---------------|:------------------|:-----------------|:----|:----------------|:----|:------|:------|
-| truenas        | NAS               | Asus X99-Pro     | 16  | Xeon E5-2630 v3 | 96  | 256   | 9216  | 
+| nuc-04         | Virt Node         | NUC13ANHi7       | 16  | i7-1360P        | 64  | 1024  | N/A   |
+| nuc-05         | Virt Node         | NUC13ANHi7       | 16  | i7-1360P        | 64  | 1024  | N/A   |
 |----------------|-------------------|------------------|-----|-----------------|-----|-------|-------|
-| nuc-04         | Virt Node         | NUC13ANHi7       | 12  | i7-10710U       | 64  | 1024  | N/A   |
-| nuc-05         | Virt Node         | NUC13ANHi7       | 12  | i7-10710U       | 64  | 1024  | N/A   |
+| truenas        | NAS               | Asus X99-Pro     | 16  | Xeon E5-2630 v3 | 96  | 256   | 9216  | 
 
 
 ## AI workstation 
-I had planned on building my own AI workstation, but Microcenter had a cracking deal on the following system that had an RTX 5090  
-[HP OMEN 45L GT22-3090 - $3500](https://www.hp.com/us-en/shop/pdp/omen-by-hp-45l-gaming-desktop-gt22-3090)
+I had planned on building my own AI workstation with a 4060Ti 16GB card, but the component market is bonkers right now - so.... I got a NVIDIA DGX instead
 
 ## NUC version 1 (NUC10i7FN[HK])
 | Cost | Qty | Total | Object       | Purpose                   | Link |
