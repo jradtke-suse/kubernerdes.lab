@@ -9,22 +9,23 @@
 | nuc-02         | Harvester         | NUC10i7FNH       | 12  | i7-10710U       | 64  | 1024  | 2048  |
 | nuc-03         | Harvester         | NUC10i7FNH       | 12  | i7-10710U       | 64  | 1024  | 2048  |
 |----------------|-------------------|------------------|-----|-----------------|-----|-------|-------|
+| nuc-04         | Harvester         | NUC13ANHi7       | 16  | i7-1360P        | 64  | 1024  | 1024  |
+| nuc-05         | Harvester         | NUC13ANHi7       | 16  | i7-1360P        | 64  | 1024  | 1024  |
+| nuc-06         | Harvester         | NUC13ANHi7       | 16  | i7-1360P        | 64  | 1024  | 1024  |
+|----------------|-------------------|------------------|-----|-----------------|-----|-------|-------|
 | asus-pc-01 	 | Harvester         | Asus Z490        | 20  | i9-10850K       | 128 | 256   | 1024  | 
 | asus-pc-02	 | Harvester         | Asus Z490        | 20  | i9-10850K       | 128 | 256   | 1024  | 
 | asus-pc-03	 | Harvester         | Asus Z490        | 20  | i9-10850K       | 128 | 256   | 1024  | 
 |----------------|-------------------|------------------|-----|-----------------|-----|-------|-------|
-| wheatley	 | SLES with SUSE AI | Dell XPS 15 9520 | 24  | Intel Core Ultra 9 285K | 64 | 1024 | 1024 | 
-| spark-e        | DGX OS            | NVIDIA DGX Spark | 20 | Arm Cortex | 128 | 4096 | - |
+| wheatley	 | SLES with SUSE AI | Dell XPS 15 9520 | 14  | i9-12900HK      | 32  | 1024 | 1024 | 
+| spark-e        | DGX OS            | NVIDIA DGX Spark | 20  | Arm Cortex      | 128 | 4096 | - |
 |----------------|-------------------|------------------|-----|-----------------|-----|-------|-------|
 | cisco-sg300-28 | Mng Switch        | SG300-28         | X | X | X | X | X | X | 
 | firewall       | Border Firewall   | Sophos XGS88     | ? | ? | ? | ? | ? |
 
 ## Unused
-| System         | Purpose           | Model            | CPU | CPU model       | Mem | Disk0 | Disk1 |
+| System         | Purpose           | Model            | CPU | CPU model       | Mem | Disk0 (SSD) | Disk1 (NVMe) |
 |:---------------|:------------------|:-----------------|:----|:----------------|:----|:------|:------|
-| nuc-04         | Virt Node         | NUC13ANHi7       | 16  | i7-1360P        | 64  | 1024  | N/A   |
-| nuc-05         | Virt Node         | NUC13ANHi7       | 16  | i7-1360P        | 64  | 1024  | N/A   |
-|----------------|-------------------|------------------|-----|-----------------|-----|-------|-------|
 | truenas        | NAS               | Asus X99-Pro     | 16  | Xeon E5-2630 v3 | 96  | 256   | 9216  | 
 
 
