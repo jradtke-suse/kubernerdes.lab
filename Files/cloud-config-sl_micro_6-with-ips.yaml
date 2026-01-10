@@ -32,8 +32,8 @@ runcmd:
     HOSTNAME=$(hostname)
     IPADDR=""
     GATEWAY="10.10.12.1"
-    DNS_SERVERS="10.10.12.8 10.10.12.9 8.8.8.8"
-    DNS_DOMAIN="kubernerdes.lab"
+    DNS_SERVERS="10.10.12.6 10.10.12.7 8.8.8.8"
+    DNS_DOMAIN="homelab.kubernerdes.com"
 
     # Determine IP address based on hostname
     case "$HOSTNAME" in
