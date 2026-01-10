@@ -120,12 +120,6 @@ runcmd:
     ip addr show $IFACE | tee -a $LOG_FILE
     echo "========================================" | tee -a $LOG_FILE
 
-  # Ensure systemd-resolved is configured properly
-  - systemctl enable --now systemd-resolved
-
-  # Create symlink for /etc/resolv.conf if it doesn't exist
-  - ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf || true
-
 # Configure NTP (Network Time Protocol) for time synchronization
 # SL-Micro uses systemd-timesyncd by default
 ntp:
