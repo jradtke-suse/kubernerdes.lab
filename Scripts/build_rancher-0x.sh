@@ -19,9 +19,9 @@ sudo sed -i -e '/rancher/d' /etc/hosts
 cat << EOF | tee -a /etc/hosts
 
 # Rancher Nodes
-10.10.12.211    rancher-01.kubernerdes.lab rancher-01
-10.10.12.212    rancher-02.kubernerdes.lab rancher-02
-10.10.12.213    rancher-03.kubernerdes.lab rancher-03
+10.10.12.211    rancher-01.homelab.kubernerdes.com rancher-01
+10.10.12.212    rancher-02.homelab.kubernerdes.com rancher-02
+10.10.12.213    rancher-03.homelab.kubernerdes.com rancher-03
 EOF
 
 # Set some variables
@@ -29,7 +29,7 @@ export MY_K3S_VERSION=v1.32.6+k3s1
 export MY_K3S_INSTALL_CHANNEL=v1.32
 export MY_K3S_TOKEN=Waggoner
 export MY_K3S_ENDPOINT=10.10.12.210
-export MY_K3S_HOSTNAME=rancher.kubernerdes.lab
+export MY_K3S_HOSTNAME=rancher.homelab.kubernerdes.com
 
 # Run the install process
 case $(uname -n) in
@@ -75,11 +75,11 @@ helm install cert-manager jetstack/cert-manager \
 
 helm install rancher rancher-latest/rancher \
   --namespace cattle-system \
-  --set hostname=rancher.kubernerdes.lab \
+  --set hostname=rancher.homelab.kubernerdes.com \
   --set replicas=1 \
   --set bootstrapPassword=mypasswordis3l33t
 
-echo https://rancher.kubernerdes.lab/dashboard/?setup=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}')
+echo https://rancher.homelab.kubernerdes.com/dashboard/?setup=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}')
 BOOTSTRAP_PASSWORD=$(kubectl get secret --namespace cattle-system bootstrap-secret -o go-template='{{.data.bootstrapPassword|base64decode}}{{ "\n" }}')
 
 exit 
