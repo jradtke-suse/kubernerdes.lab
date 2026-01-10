@@ -29,11 +29,17 @@ runcmd:
   # Configure static IP address based on hostname using systemd-networkd
   - |
     #!/bin/bash
-    HOSTNAME=$(hostname)
+    # Use multiple methods to reliably get hostname
+    HOSTNAME=$(cat /etc/hostname 2>/dev/null || hostname)
     IPADDR=""
     GATEWAY="10.10.12.1"
-    DNS_SERVERS="10.10.12.6 10.10.12.7 8.8.8.8"
     DNS_DOMAIN="homelab.kubernerdes.com"
+
+    # Log for debugging
+    LOG_FILE="/var/log/static-ip-setup.log"
+    echo "========================================" | tee -a $LOG_FILE
+    echo "$(date): Starting static IP configuration" | tee -a $LOG_FILE
+    echo "Detected hostname: $HOSTNAME" | tee -a $LOG_FILE
 
     # Determine IP address based on hostname
     case "$HOSTNAME" in
@@ -46,45 +52,64 @@ runcmd:
       observability-02) IPADDR="10.10.12.222/22" ;;
       observability-03) IPADDR="10.10.12.223/22" ;;
       *)
-        echo "Unknown hostname: $HOSTNAME - skipping static IP configuration"
+        echo "Unknown hostname: $HOSTNAME - skipping static IP configuration" | tee -a $LOG_FILE
         exit 0
         ;;
     esac
+
+    echo "Target IP address: $IPADDR" | tee -a $LOG_FILE
 
     # Find the primary network interface
     IFACE=$(ip route | grep default | awk '{print $5}' | head -n1)
 
     if [ -z "$IFACE" ]; then
-      echo "No network interface found"
+      echo "ERROR: No network interface found" | tee -a $LOG_FILE
       exit 1
     fi
 
-    # Create systemd-networkd configuration for static IP
-    # SL-Micro uses systemd-networkd instead of wicked
-    cat > /etc/systemd/network/20-$IFACE.network <<EOF
-    [Match]
-    Name=$IFACE
-
-    [Network]
-    Address=$IPADDR
-    Gateway=$GATEWAY
-    DNS=$DNS_SERVERS
-    Domains=$DNS_DOMAIN
-
-    [DHCP]
-    UseDNS=false
-    EOF
+    echo "Using network interface: $IFACE" | tee -a $LOG_FILE
 
     # Disable cloud-init network configuration to prevent conflicts
+    # Do this BEFORE creating systemd-networkd config
     mkdir -p /etc/cloud/cloud.cfg.d
-    cat > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg <<EOF
-    network: {config: disabled}
-    EOF
+    cat > /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg <<'EOF'
+network: {config: disabled}
+EOF
+    echo "Disabled cloud-init network configuration" | tee -a $LOG_FILE
+
+    # Create systemd-networkd configuration for static IP
+    # SL-Micro uses systemd-networkd instead of wicked
+    # IMPORTANT: No leading whitespace - systemd-networkd is whitespace-sensitive
+    cat > /etc/systemd/network/20-$IFACE.network <<EOF
+[Match]
+Name=$IFACE
+
+[Network]
+Address=$IPADDR
+Gateway=$GATEWAY
+DNS=10.10.12.6
+DNS=10.10.12.7
+DNS=8.8.8.8
+Domains=$DNS_DOMAIN
+
+[DHCP]
+UseDNS=false
+EOF
+
+    echo "Created systemd-networkd config: /etc/systemd/network/20-$IFACE.network" | tee -a $LOG_FILE
+
+    # Show the config for debugging
+    echo "Config content:" | tee -a $LOG_FILE
+    cat /etc/systemd/network/20-$IFACE.network | tee -a $LOG_FILE
 
     # Restart systemd-networkd to apply changes
     systemctl restart systemd-networkd
+    sleep 2
 
-    echo "Configured $IFACE with IP address $IPADDR"
+    echo "Configured $IFACE with IP address $IPADDR" | tee -a $LOG_FILE
+    echo "Current IP addresses:" | tee -a $LOG_FILE
+    ip addr show $IFACE | tee -a $LOG_FILE
+    echo "========================================" | tee -a $LOG_FILE
 
   # Ensure systemd-resolved is configured properly
   - systemctl enable --now systemd-resolved
